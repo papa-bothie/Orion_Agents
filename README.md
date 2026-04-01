@@ -1,73 +1,72 @@
-# Welcome to your Lovable project
+# 🚨 ORION Agents - Application Terrain
 
-## Project info
+## 📖 Description de l'application
+**ORION Agents** est une application mobile et web conçue pour les intervenants sur le terrain (sécurité, secours, pompiers, etc.), développée dans le cadre de la gestion des incidents pour les **Jeux Olympiques de la Jeunesse (JOJ) 2026 au Sénégal**. 
 
-**URL**: https://lovable.dev/projects/6034fc4b-8593-46d2-a8a7-4f96ba7dcf85
+L'application permet aux agents de :
+- Mettre à jour leur disponibilité en temps réel (Disponible, En mission, Pause).
+- Recevoir instantanément des alertes concernant des urgences et missions critiques.
+- Utiliser la navigation GPS pour se rendre sur les lieux de l'incident.
+- Suivre le déroulement des opérations (accepter une mission, demander des renforts, envoyer des preuves photographiques, clore l'intervention).
 
-## How can I edit this code?
+Le projet comprend actuellement :
+1. Un **prototype web** (Dossier racine).
+2. Un **squelette d'application mobile** de production (`/mobile-app`).
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🚀 Comment lancer le projet
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6034fc4b-8593-46d2-a8a7-4f96ba7dcf85) and start prompting.
+### 1. Prototype Web (React / Vite)
+Situé à la racine du projet, c'est la vue initiale créée pour valider les comportements.
+```bash
+# 1. Installer les dépendances
+npm install
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# 2. Lancer le serveur de développement
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### 2. Application Mobile (React Native / Expo)
+Situé dans le dossier `mobile-app/`, c'est la version finale, structurée et scalable à déployer sur les téléphones des agents (iOS / Android).
+```bash
+# 1. Se rendre dans le sous-dossier
+cd mobile-app/
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+# 2. Installer les dépendances
+npm install
 
-**Use GitHub Codespaces**
+# 3. Lancer l'application via Expo
+npx expo start
+```
+*Note : Utilisez l'application "Expo Go" sur votre téléphone pour scanner le QR code affiché dans le terminal.*
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## 🛠️ Outils utilisés (Stack Pédagogique)
 
-This project is built with:
+**Pour la partie Mobile (Production) :**
+- **React Native & Expo** : Création de l'application multiplateforme rapide et performante.
+- **TypeScript** : Typage statique robuste pour un code fiable en équipe.
+- **React Navigation** : Pour gérer la bascule entre l'écran d'authentification et les écrans applicatifs (Tabs/Stack).
+- **Zustand** : Gestion de l'état global léger (Authentification et Statut de l'agent).
+- **React Query (@tanstack)** : Communication avec le serveur backend (gestion du cache, chargement et retry automatique).
+- **Axios** : Client HTTP configuré avec des intercepteurs pour les tokens d'accès.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 🎯 Prochaines étapes (Roadmap)
 
-Simply open [Lovable](https://lovable.dev/projects/6034fc4b-8593-46d2-a8a7-4f96ba7dcf85) and click on Share -> Publish.
+Le squelette mobile est en place. Afin d'aboutir à l'application fonctionnelle complète, voici les étapes de développement suivantes :
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+1. **Intégration UI/UX (Dossier `/components` & `/features`) :** 
+   - Migration progressive des composants Visuels (Boutons, Cartes, etc.) du Web (Tailwind/Shadcn) vers React Native (NativeWind ou StyleSheet natif).
+2. **Implémentation de l'Authentification Réelle :**
+   - Remplacer le "Placeholder" par un vrai masque de login, relier l'API backend pour obtenir un JWT, et l'enregistrer dans un `SecureStore`.
+3. **Mise en service des Capteurs Matériels :**
+   - Intégrer `expo-location` pour suivre la coordonnée GPS de l'agent et calculer sa distance vis-à-vis de l'incident.
+   - Ajouter `expo-camera` pour les demandes de photos de la scène d'intervention.
+4. **Temps Réel et Notifications :**
+   - Câbler Expo Push Notifications et/ou des WebSockets pour déclencher l'alerte de "Mission" sur l'écran en millisecondes.
+5. **Phase de Test :**
+   - Rédiger des tests d'intégration pour garantir la fiabilité des actions critiques (comme "Accepter une mission" ou "Clôturer").
