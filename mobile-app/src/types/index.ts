@@ -1,5 +1,5 @@
 export type Priority = 'normal' | 'high' | 'critical';
-export type MissionStatus = 'pending' | 'accepted' | 'resolved';
+export type MissionStatus = 'EN_ATTENTE' | 'EN_COURS' | 'RÉSOLU' | 'ANNULÉ';
 
 export interface GeoPoint {
     latitude: number;
@@ -11,7 +11,8 @@ export interface Mission {
     type: string;
     status: MissionStatus;
     priority: Priority;
-    locationName: string;
+    description?: string;
+    locationName?: string;
     coordinates: GeoPoint;
     timestamp: string;
 }
