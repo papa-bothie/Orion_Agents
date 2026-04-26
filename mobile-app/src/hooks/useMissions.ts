@@ -1,23 +1,34 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '../services/api.client';
-import { useAuthStore } from '../store/useAuthStore';
-import { Mission } from '../types';
+import { apiClient } from '../api/axios';
+import useAuthStore from '../store/useAuthStore';
+import { Incident } from '../types';
 
 export const useMissions = () => {
-    const user = useAuthStore((state) => state.user);
-    const agentId: string | undefined = user?.id;
+    const agent = useAuthStore((state) => state.agent);
+    const agentId: string | undefined = agent?.id;
 
     return useQuery({
         queryKey: ['missions', agentId],
-        queryFn: async (): Promise<Mission[]> => {
-            const response = await api.get(`/agents/${agentId}/missions`);
-            return response.data;
+        queryFn: async (): Promise<Incident[]> => {
+            const response = await apiClient.get('/incidents/mes-incidents');
+            const data = response.data?.incidents || response.data || [];
+            
+            // Mapper les propriétés backend vers le format attendu
+            return data.map((inc: any) => ({
+                id: inc.id,
+                reference: inc.reference,
+                type: inc.type,
+                urgency: inc.urgence,
+                description: inc.description,
+                latitude: inc.latitude,
+                longitude: inc.longitude,
+                status: inc.statut,
+                agentAssigneId: inc.agentAssigneId,
+                dateCreation: inc.dateCreation
+            }));
         },
-        // Ne lance la requête que si l'agent est bien connecté avec un ID valide
         enabled: !!agentId,
-        // Désactive les retries automatiques pour éviter le spam de 404
         retry: false,
-        // Données valides 30 secondes, refetch toutes les minutes
         staleTime: 30_000,
         refetchInterval: 60_000,
     });

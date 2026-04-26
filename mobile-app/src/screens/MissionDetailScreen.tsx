@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Alert, Scr
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useMissionDetail } from '../hooks/useMissionDetail';
 import { useUpdateMission } from '../hooks/useUpdateMission';
-import { MissionStatus } from '../types';
+import { IncidentStatus } from '../types';
 
 export const MissionDetailScreen = () => {
     const route = useRoute<any>();
@@ -29,13 +29,13 @@ export const MissionDetailScreen = () => {
         );
     }
 
-    const handleUpdateStatus = (status: MissionStatus) => {
+    const handleUpdateStatus = (status: IncidentStatus) => {
         updateMission(
             { id, status },
             {
                 onSuccess: () => {
                     Alert.alert('Succès', 'Statut mis à jour');
-                    if (status === 'RÉSOLU') {
+                    if (status === IncidentStatus.RESOLU) {
                         navigation.goBack();
                     }
                 },
@@ -58,12 +58,12 @@ export const MissionDetailScreen = () => {
 
                 <View style={styles.infoRow}>
                     <Text style={styles.label}>Urgence :</Text>
-                    <Text style={styles.value}>{mission.priority}</Text>
+                    <Text style={styles.value}>{mission.urgency}</Text>
                 </View>
 
                 <View style={styles.infoRow}>
                     <Text style={styles.label}>Localisation :</Text>
-                    <Text style={styles.value}>{mission.locationName || 'Non spécifié'}</Text>
+                    <Text style={styles.value}>{mission.description || 'Non spécifié'}</Text>
                 </View>
 
                 {mission.description && (
@@ -75,11 +75,11 @@ export const MissionDetailScreen = () => {
             </View>
 
             <View style={styles.actions}>
-                {mission.status === 'EN_ATTENTE' && (
+                {mission.status === IncidentStatus.NOUVEAU && (
                     <>
                         <TouchableOpacity 
                             style={[styles.button, styles.btnEnCours]}
-                            onPress={() => handleUpdateStatus('EN_COURS')}
+                            onPress={() => handleUpdateStatus(IncidentStatus.EN_COURS)}
                             disabled={isUpdating}
                         >
                             <Text style={styles.buttonText}>Accepter</Text>
@@ -87,7 +87,7 @@ export const MissionDetailScreen = () => {
 
                         <TouchableOpacity 
                             style={[styles.button, styles.btnRefuser]}
-                            onPress={() => handleUpdateStatus('EN_ATTENTE')}
+                            onPress={() => navigation.goBack()}
                             disabled={isUpdating}
                         >
                             <Text style={styles.buttonText}>Refuser</Text>
@@ -95,10 +95,10 @@ export const MissionDetailScreen = () => {
                     </>
                 )}
 
-                {mission.status === 'EN_COURS' && (
+                {mission.status === IncidentStatus.EN_COURS && (
                     <TouchableOpacity 
                         style={[styles.button, styles.btnTerminer]}
-                        onPress={() => handleUpdateStatus('RÉSOLU')}
+                        onPress={() => handleUpdateStatus(IncidentStatus.RESOLU)}
                         disabled={isUpdating}
                     >
                         <Text style={styles.buttonText}>Terminer la mission</Text>
