@@ -2,12 +2,18 @@ import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useMissions } from '../hooks/useMissions';
-import { Mission } from '../types';
+import { useOrionSocket } from '../hooks/useOrionSocket';
+import { Incident } from '../types';
+import useAuthStore from '../store/useAuthStore';
 
 
 export const HomeScreen = () => {
     const navigation = useNavigation<any>();
     const { data: missions, isLoading, error, refetch, isRefetching } = useMissions();
+    const { agent, logout } = useAuthStore();
+    
+    // Activer l'écoute des WebSockets pour le rafraîchissement en temps réel
+    useOrionSocket();
 
     if (isLoading) {
         return (
@@ -37,24 +43,40 @@ export const HomeScreen = () => {
         }
     };
 
-    const renderItem = ({ item }: { item: Mission }) => (
+    const renderItem = ({ item }: { item: Incident }) => (
         <TouchableOpacity 
             style={styles.card}
             onPress={() => navigation.navigate('MissionDetail', { id: item.id })}
         >
             <View style={styles.cardHeader}>
                 <Text style={styles.type}>{item.type}</Text>
-                <View style={[styles.badge, getPriorityStyle(item.priority)]}>
-                    <Text style={styles.badgeText}>{item.priority}</Text>
+                <View style={[styles.badge, getPriorityStyle(item.urgency || '')]}>
+                    <Text style={styles.badgeText}>{item.urgency || 'NORMALE'}</Text>
                 </View>
             </View>
             <Text style={styles.status}>Statut: {item.status}</Text>
-            {item.locationName && <Text style={styles.location}>📍 {item.locationName}</Text>}
+            {item.description && <Text style={styles.location}>📍 {item.description}</Text>}
         </TouchableOpacity>
     );
 
     return (
         <View style={styles.container}>
+            <View style={styles.topBar}>
+                <View>
+                    <Text style={styles.greeting}>Bonjour,</Text>
+                    <Text style={styles.agentName}>
+                        {agent?.prenom ? `${agent.prenom} ${agent.nom}` : 'Agent'}
+                    </Text>
+                    {agent?.matricule ? (
+                        <Text style={styles.matricule}>Mat. {agent.matricule}</Text>
+                    ) : null}
+                </View>
+                <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
+                    <Text style={styles.logoutIcon}>🚪</Text>
+                    <Text style={styles.logoutText}>Déco.</Text>
+                </TouchableOpacity>
+            </View>
+            
             <View style={styles.header}>
                 <Text style={styles.title}>Mes Missions</Text>
             </View>
@@ -78,11 +100,27 @@ export const HomeScreen = () => {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#f5f5f5' },
     centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, paddingTop: 60, backgroundColor: '#fff' },
+    topBar: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 60,
+        paddingBottom: 16,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#E5E7EB',
+    },
+    greeting: { fontSize: 12, color: '#9CA3AF' },
+    agentName: { fontSize: 16, fontWeight: '700', color: '#111827' },
+    matricule: { fontSize: 11, color: '#6B7280', marginTop: 2 },
+    logoutBtn: { alignItems: 'center', padding: 8 },
+    logoutIcon: { fontSize: 20 },
+    logoutText: { fontSize: 10, color: '#EF4444', marginTop: 2 },
+    header: { padding: 20, paddingBottom: 10, backgroundColor: '#fff' },
     title: { fontSize: 24, fontWeight: 'bold' },
-    logout: { color: '#FF3B30', fontSize: 16 },
     list: { padding: 15 },
-    card: { backgroundColor: '#fff', padding: 15, borderRadius: 10, marginBottom: 15, boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)', elevation: 3 },
+    card: { backgroundColor: '#fff', padding: 15, borderRadius: 10, marginBottom: 15, elevation: 3 },
     cardHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
     type: { fontSize: 18, fontWeight: 'bold' },
     badge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 },

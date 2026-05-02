@@ -1,13 +1,25 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '../services/api.client';
-import { Mission } from '../types';
+import { apiClient } from '../api/axios';
+import { Incident } from '../types';
 
 export const useMissionDetail = (id: string) => {
     return useQuery({
         queryKey: ['mission', id],
-        queryFn: async (): Promise<Mission> => {
-            const response = await api.get(`/incidents/${id}`);
-            return response.data;
+        queryFn: async (): Promise<Incident> => {
+            const response = await apiClient.get(`/incidents/${id}`);
+            const inc = response.data;
+            return {
+                id: inc.id,
+                reference: inc.reference,
+                type: inc.type,
+                urgency: inc.urgence,
+                description: inc.description,
+                latitude: inc.latitude,
+                longitude: inc.longitude,
+                status: inc.statut,
+                agentAssigneId: inc.agentAssigneId,
+                dateCreation: inc.dateCreation
+            };
         },
         enabled: !!id,
     });
